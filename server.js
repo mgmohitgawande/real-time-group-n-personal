@@ -9,6 +9,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 
+
+var port = process.env.PORT || 8080;
+
 app.use(cookieParser());
 app.use(session({secret: "Shh, its a secret!"}));
 
@@ -41,6 +44,6 @@ app.use('/api', require("./server/api/router.js")(io));
 require('./server/sockets/chat_socket.js')(io)
 
 
-http.listen(3000,function(){
-    console.log("Node Running On port "+": 3000");
+http.listen(port, function(){
+    console.log("Node Running On port :", port);
 })
