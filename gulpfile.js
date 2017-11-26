@@ -6,7 +6,7 @@ gulp.task('default', function(){
         script: 'server.js',
         ext: 'js',
         env: {
-            PORT: 8001,
+            PORT: 8080,
             env : false,
             DB_CONNECTION_STRING : "mongodb://localhost:27017/chat_app"
         },

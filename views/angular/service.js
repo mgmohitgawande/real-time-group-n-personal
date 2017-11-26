@@ -154,11 +154,28 @@ app.service('dataService', ['$http', '$localStorage', '$state', 'app_settings', 
             data : data
         })
     }
+    var _login = function(data){
+        return $http({ 
+            method : 'POST',
+            url : app_settings.API_URL + 'login', 
+            data : data
+        })
+    }
+
+    var _register = function(data){
+        return $http({
+            method : 'POST',
+            url : app_settings.API_URL + 'register', 
+            data : data
+        })
+    }
 
     return {
         send_friend_request : _send_friend_request,
         confirm_friend_request : _confirm_friend_request,
         registerChatSessionForUser : _registerChatSessionForUser,
-        logout : _logout
+        logout : _logout,
+        login : _login,
+        register : _register
     }
 }])
