@@ -168,7 +168,7 @@
     </div>
 </div>
 
-<div ng-repeat="popup in popups">
+<div ng-repeat="popup in popups track by $index">
     <div class="popup-box popup-box-on chat-popup" id="{{popup._id + '01'}}">
         <div class="popup-head">
             <div class="popup-head-left pull-left">{{popup.name}}</div>
@@ -187,15 +187,25 @@
             </div>
         </div>
         <div class="box-body popup-messages">
-            <div class="direct-chat-messages" id="'+chat_friend+'"></div>
+            <div class="direct-chat-messages" id="{{popup._id}}">
+                <div class="direct-chat-msg" ng-repeat="popup_message in popup.messages" ng-class="{'right' : popup_message.sender != user._id}">
+                    <div class="direct-chat-info clearfix">
+                        <span class="direct-chat-name" ng-class="{'pull-left' : popup_message.sender == user._id, 'pull-right' : popup_message.sender != user._id}">{{popup_message.sender == user._id ? user.handle : popup.name}}</span>
+                        <span class="direct-chat-timestamp" ng-class="{'pull-left' : popup_message.sender != user._id, 'pull-right' : popup_message.sender == user._id}">{{getDate(popup_message.date)}}</span>
+                    </div>
+                    <div class="direct-chat-text">
+                        {{popup_message.msg}}
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="popup-messages-footer">
-            <textarea id="status_message" placeholder="Type a message..." rows="10" cols="40" ng-model="message" my-enter="send_message(popup._id, message)"></textarea>
+            <textarea id="status_message" placeholder="Type a message..." rows="10" cols="40" ng-model="popup.curr_message" my-enter="send_message(popup._id, popup.curr_message, $index)"></textarea>
             <div class="btn-footer">
                 <button class="bg_none"><i class="glyphicon glyphicon-film"></i> </button>
                 <button class="bg_none"><i class="glyphicon glyphicon-camera"></i> </button>
                 <button class="bg_none"><i class="glyphicon glyphicon-paperclip"></i> </button>
-                <button class="bg_none pull-right" ng-click="send_message(popup._id, message)"><i class="glyphicon  glyphicon-thumbs-up"></i> </button>
+                <button class="bg_none pull-right" ng-click="send_message(popup._id, popup.curr_message, $index)"><i class="glyphicon  glyphicon-thumbs-up"></i> </button>
             </div>
         </div>
     </div>

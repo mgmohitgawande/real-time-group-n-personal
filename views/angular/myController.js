@@ -3,7 +3,7 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
     console.log('my name root scope', $rootScope.name)
     url= location.host;
     $scope.$storage = $localStorage;
-
+    
     $scope.user = $localStorage.user;
     $scope.users=[];
     $scope.online_friends=[];
@@ -150,7 +150,7 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
         form_date=monthNames[date.getMonth()]+" "+date.getDate()+", "+hour+":"+date.getMinutes()+" "+period;
         return form_date;        
     }
-    
+    $scope.getDate = getDate;
     
     socket.on('group', function(data) {
         var div = document.createElement('div');
@@ -188,7 +188,7 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
         $scope.groupMessage=null;
     }
     
-    var insertMessage = function(from, to, msg){
+    var insertMessage = function(from, to, msg, popup_index){
         console.log(from + " " + to);
         if (to in $scope.messages){
             if ($scope.messages[to].length>25){
@@ -203,55 +203,28 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
             "msg" : msg,
             "date" : getDate()  
         });
+        $scope.popups[popup_index].messages.push({
+            "sender":from,
+            "msg" : msg,
+            "date" : getDate()  
+        })
         localStorage.setItem(to, JSON.stringify($scope.messages[to]));
         localStorage.setItem(from, JSON.stringify($scope.messages[from]));
         console.log(localStorage.getItem(to));
     }
 
-    socket.on('private message', function(data) {        
-        var div = document.createElement('div');
-        div.innerHTML='<div class="direct-chat-msg right">\
-                        <div class="direct-chat-info clearfix">\
-                        <span class="direct-chat-name pull-right    ">'+data.split("#*@")[2]+'</span>\
-                        <span class="direct-chat-timestamp pull-left">'+getDate()+'</span>\
-                        </div>\
-                        <img class="direct-chat-img" src="" alt="message user image">\
-                        <div class="direct-chat-text">'
-                        +data.split("#*@")[1]+
-                        '</div>\
-                        </div>';
-        var chat_box=document.getElementById(data.split("#*@")[2]);
-        console.log(chat_box);
-        if(chat_box!=null){
-            chat_box.appendChild(div);
-        }
-        else{
-            $scope.chat_popup(data.split("#*@")[2]);
-            document.getElementById(data.split("#*@")[2]).appendChild(div);
-        }
-        insertMessage(data.split("#*@")[2],data.split("#*@")[2],data.split("#*@")[1]);
-        document.getElementById(data.split("#*@")[2]).scrollTop=document.getElementById(data.split("#*@")[2]).scrollHeight;        
+    socket.on('private message', function(data) {
+        var chat_friend = $scope.user.friends.filter(friend => friend._id == data.split("#*@")[2])[0]
+        $scope.chat_popup(chat_friend);
+        insertMessage(data.split("#*@")[2], data.split("#*@")[2], data.split("#*@")[1], $scope.popups.length - 1);
+        $scope.$apply();
     });
 
-    $scope.send_message=function(chat, message){
-        
-        console.log('chat and message from send_message', chat, $scope.user);
-        div = document.createElement('div');
-        div.innerHTML='<div class="direct-chat-msg"> \
-                        <div class="direct-chat-info clearfix">\
-                        <span class="direct-chat-name pull-left">'+$scope.user+'</span>\
-                        <span class="direct-chat-timestamp pull-right">'+getDate()+'</span>\
-                        </div>\
-                        <img class="direct-chat-img" src=""\ alt="message user image">\
-                        <div class="direct-chat-text">'
-                        +message+
-                        '</div>\
-                        </div>';
-        document.getElementById(chat).appendChild(div);
+    $scope.send_message = function(chat, message, popup_index){
+        insertMessage($scope.user._id, chat, message, popup_index);
+        socket.emit('private message',chat+"#*@"+message+"#*@"+$scope.user._id+"#*@"+getDate());
         document.getElementById(chat).scrollTop=document.getElementById(chat).scrollHeight;
-        socket.emit('private message',chat+"#*@"+message+"#*@"+$scope.user+"#*@"+getDate());
-        insertMessage($scope.user,chat,message);
-        $scope.message=null;
+        $scope.popups[popup_index].curr_message = null
     }
 
     
@@ -259,6 +232,8 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
     
     $scope.chat_popup = function(chat_friend){
         $scope.popups = $scope.popups.filter(friend => friend._id != chat_friend._id)
+        console.log('jjj', chat_friend, localStorage.getItem(chat_friend._id), typeof localStorage.getItem(chat_friend._id))
+        chat_friend.messages = localStorage.getItem(chat_friend._id) && localStorage.getItem(chat_friend._id) != null && localStorage.getItem(chat_friend._id) != 'undefined' ? JSON.parse(localStorage.getItem(chat_friend._id)) : []
         $scope.popups.push(chat_friend)
     }
     $scope.close_chat= function(chat_friend_id)

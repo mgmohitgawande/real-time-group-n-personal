@@ -27,6 +27,31 @@ module.exports = function(io){
         })
     }
 
+    var getUserSessionsForUsers = function(userId){
+        return new Promise(function(success, failure){
+            models.user_sessions.aggregate([{ 
+                $match : { user_id : userId } 
+            }, {
+                $group : {
+                    _id : {
+                        user_id : '$user_id',
+                        handle : '$handle'
+                    },
+                    // handle : '$handle',
+                    socket_id : {
+                        $push : '$socket_id'
+                    }
+                }
+            }], function(err, onlineUserSessions){
+                if(err){
+                    failure(err)
+                }   else{
+                    success(onlineUserSessions)
+                }
+            })
+        })
+    }
+
     var getFriends = function(user_id){
         return new Promise(function(success, failure){
             models.user.findOne({
@@ -123,8 +148,18 @@ module.exports = function(io){
                 "message" : msg.split("#*@")[1],
                 "sender" : msg.split("#*@")[2],
                 "reciever" : msg.split("#*@")[0],
-                "date" : new Date()});
-            io.to(users[msg.split("#*@")[0]]).emit('private message', msg);
+                "date" : new Date()
+            });
+            getUserSessionsForUsers(msg.split("#*@")[0]).then(function(data){
+                console.log('awdawd', data[0])
+                if(data && data.length){
+                    data[0].socket_id.forEach(element => {
+                        io.to(element).emit('private message', msg);
+                    });
+                }
+            }, function(error){
+                console.log('getUserSessionsForUsers error', error)
+            })
         });
         
         socket.on('disconnect', handleSocketDisconnection(socket));
