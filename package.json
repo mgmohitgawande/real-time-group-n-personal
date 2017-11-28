@@ -1,0 +1,31 @@
+{
+  "name": "chat_app",
+  "version": "1.0.0",
+  "description": "Real Time Chat Applicaion",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "Mohit Gawande",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.15.6",
+    "gulp": "^3.9.1",
+    "gulp-nodemon": "^2.2.1",
+    "ip": "^1.1.3",
+    "mongoose": "^4.6.1",
+    "nodemon": "^1.11.0",
+    "socket.io": "^1.4.8"
+  },
+  "config": {
+    "server": {
+      "port": "3000"
+    },
+    "db": {
+      "url": "mongodb://localhost:27017/chat_app"
+    }
+  }
+}

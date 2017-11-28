@@ -1,0 +1,4 @@
+{
+    "port" : 8080,
+    "mongo_url" : "mongodb://chat:chat@ds119436.mlab.com:19436"
+}
