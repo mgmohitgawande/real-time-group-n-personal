@@ -116,7 +116,7 @@ body
 
 .popup-box .popup-messages {
     background: #337ab7 none repeat scroll 0 0;
-    height: 275px;
+    height: 300px;
     overflow: auto;
 }
 .direct-chat-messages {

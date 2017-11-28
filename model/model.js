@@ -44,3 +44,7 @@ module.exports.user_sessions = mongoose.model('UserSessions', new Schema({
     handle          : String,
     date            : Date
 },{strict: false}));
+
+module.exports.objectId = function(id){
+    return mongoose.Types.ObjectId(id)
+}

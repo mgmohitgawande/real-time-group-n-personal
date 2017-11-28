@@ -52,9 +52,6 @@
                         </li>  
                     </ul>
                 </div>
-                <div class="box-footer text-center">
-                    <a href="javascript:void(0)" class="uppercase">Something</a>
-                </div>
             </div>
         </div>
         <div class="col-md-3 pull-right">
@@ -62,7 +59,7 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">Recent Chats</h3>
                     <div class="box-tools">
-                        <span class="label label-danger">-- {{online_friends.length}} --</span> online11
+                        <span class="label label-danger">{{online_friends.length}}</span>
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                         </button>
                         <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>
@@ -77,9 +74,6 @@
                         <a class="users-list-name">{{chat.messages[chat.messages.length - 1].msg}}</a>
                     </div>
                 </div>
-                <div class="box-footer text-center">
-                    <a href="javascript:void(0)" class="uppercase">Something</a>
-                </div>
             </div>
         </div>
     </div>
@@ -89,7 +83,7 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">Friends</h3>
                     <div class="box-tools">
-                        <span class="label label-danger">-- {{pending_friends.length}}</span> pending
+                        <span class="label label-danger">{{pending_friends.length}}</span>
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                     </div>
@@ -101,9 +95,6 @@
                         </li>  
                     </ul>
                 </div>
-                <div class="box-footer text-center">
-                    <a href="javascript:void(0)" class="uppercase">Something</a>
-                </div>
             </div>
         </div>
         <div class="col-md-3 pull-right">
@@ -111,7 +102,7 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">Pending Requests</h3>
                     <div class="box-tools">
-                        <span class="label label-danger">-- {{pending_friends.length}}</span> pending
+                        <span class="label label-danger">{{pending_friends.length}}</span>
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                     </div>
@@ -122,9 +113,6 @@
                             <button><img src="views/img/avatar2.png" alt="User Image"><a class="users-list-name">{{friend.name}}</a></button>
                         </li>  
                     </ul>
-                </div>
-                <div class="box-footer text-center">
-                    <a href="javascript:void(0)" class="uppercase">Something</a>
                 </div>
             </div>
         </div>
@@ -155,9 +143,8 @@
                         <i class="glyphicon glyphicon-cog"></i>
                     </button>
                     <ul role="menu" class="dropdown-menu pull-right">
-                        <li><a href="#">Block</a></li>
-                        <li><a href="#">Clear Chat</a></li>
-                        <li><a href="#">Email Chat</a></li>
+                        <li ng-click="cancelRequest({friend_id : popup._id, friend_handle : popup.name})"><a href="#">Block</a></li>
+                        <li ng-click="clearChat(popup._id)"><a href="#">Clear Chat</a></li>
                     </ul>
                 </div>
                 <button  ng-click="close_chat(popup._id)" class="chat-header-button pull-right" type="button">  <i class="glyphicon glyphicon-remove"></i></button>
@@ -178,12 +165,6 @@
         </div>
         <div class="popup-messages-footer">
             <textarea id="status_message" placeholder="Type a message..." rows="10" cols="40" ng-model="popup.curr_message" my-enter="send_message(popup._id, popup.curr_message, $index)"></textarea>
-            <div class="btn-footer">
-                <button class="bg_none"><i class="glyphicon glyphicon-film"></i> </button>
-                <button class="bg_none"><i class="glyphicon glyphicon-camera"></i> </button>
-                <button class="bg_none"><i class="glyphicon glyphicon-paperclip"></i> </button>
-                <button class="bg_none pull-right" ng-click="send_message(popup._id, popup.curr_message, $index)"><i class="glyphicon  glyphicon-thumbs-up"></i> </button>
-            </div>
         </div>
     </div>
         

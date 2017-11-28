@@ -91,6 +91,29 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
                 })
             })
     }
+    $scope.clearChat = function(friend_id){
+        $scope.chats.forEach(function(chat){
+            if(chat._id == friend_id){
+                chat.messages.length = 0
+            }
+        })
+    }
+    $scope.acceptRequest = function(data){
+        data['confirm']="Yes";
+        dataService.confirm_friend_request(data).then(function(){
+            console.log(data)
+        }, function(error){
+            console.log(error)
+        })
+    }
+    $scope.cancelRequest = function(data){
+        data['confirm']="No";
+        dataService.confirm_friend_request(data).then(function(){
+            console.log(data)
+        }, function(error){
+            console.log(error)
+        })
+    }
     
     $scope.showConfirm = function(data, fromPendingList) {
         // data : {friend_id, friend_handle}
@@ -103,21 +126,7 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
             .cancel('No');
 
         console.log('showing confirm', data)
-        $mdDialog.show(confirm).then(function() {
-            data['confirm']="Yes";
-            dataService.confirm_friend_request(data).then(function(){
-                console.log(data)
-            }, function(error){
-                console.log(error)
-            })
-        }, function() {
-            data['confirm']="No";
-            dataService.confirm_friend_request(data).then(function(){
-                console.log(data)
-            }, function(error){
-                console.log(error)
-            })
-        });
+        $mdDialog.show(confirm).then(function(){$scope.acceptRequest(data)}, function(){$scope.cancelRequest(data)});
     };
 
     $scope.handleFriendReq = function(friend){
@@ -218,8 +227,6 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
         friend = $scope.user.friends.filter(temp_friend => temp_friend._id == friend);
         friend = friend.length ? friend[0] : {}
 
-        $scope.chats = $scope.chats.filter(chat => chat._id != friend._id)
-        
         var friend_chat = $scope.chats.filter(chat => chat._id == friend._id)
         friend_chat = friend_chat.length ? friend_chat[0] : {
             _id : friend._id,
@@ -227,9 +234,9 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
             status : friend.status,
             messages : []
         }
+        $scope.chats = $scope.chats.filter(chat => chat._id != friend._id)
 
         friend_chat.messages.push(message_obj);
-        $scope.popups[popup_index].messages.push(message_obj)
 
         $scope.chats.unshift(friend_chat)
         console.log(localStorage.getItem(to));
@@ -238,14 +245,16 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
     socket.on('private message', function(data) {
         var chat_friend = $scope.user.friends.filter(friend => friend._id == data.split("#*@")[2])[0]
         $scope.chat_popup(chat_friend);
-        insertMessage(data.split("#*@")[2], data.split("#*@")[2], data.split("#*@")[1], $scope.popups.length - 1);
+        insertMessage(chat_friend._id, $scope.user._id, data.split("#*@")[1], $scope.popups.length - 1);
         $scope.$apply();
     });
 
     $scope.send_message = function(chat, message, popup_index){
         insertMessage($scope.user._id, chat, message, popup_index);
         socket.emit('private message',chat+"#*@"+message+"#*@"+$scope.user._id+"#*@"+getDate());
-        document.getElementById(chat).scrollTop=document.getElementById(chat).scrollHeight;
+        document.getElementById(chat).parent = document.getElementById(chat).scrollHeight;
+        // document.getElementById(chat).scrollTop = 5000;
+        console.log('###############', document.getElementById(chat), document.getElementById(chat).scrollTop, document.getElementById(chat).scrollHeight)
         $scope.popups[popup_index].curr_message = null
     }
 

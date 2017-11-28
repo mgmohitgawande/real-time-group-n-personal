@@ -23,7 +23,7 @@ module.exports = (function(){
         var updateUserToCancelFriendReq = function(user_id, friend_id){
             return new Promise(function(success, failure){
                 models.user.update({
-                    "_id" : user_id
+                    "_id" : models.objectId(user_id)
                 }, {
                     '$pull' : {
                         'friends' : {
