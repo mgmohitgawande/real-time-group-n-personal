@@ -60,7 +60,7 @@
         <div class="col-md-3 pull-right">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Online Friends</h3>
+                    <h3 class="box-title">Recent Chats</h3>
                     <div class="box-tools">
                         <span class="label label-danger">-- {{online_friends.length}} --</span> online11
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -70,13 +70,12 @@
                     </div>
                 </div>
                 <div class="box-body direct-chat-messages">
-                    <ul class="users-list clearfix" >
-                        <li ng-repeat="friend in user.friends track by $index">
-                            <button ng-click="chat_popup(friend)"> 
-                                <img src="views/img/avatar3.png" alt="User Image">
-                                <a class="users-list-name">{{friend.name}}</a></button>
-                        </li>  
-                    </ul>
+                    <div class="clearfix" ng-repeat="chat in chats" ng-click="chat_popup(chat)">
+                        {{chat.name}}
+                            <img src="views/img/avatar3.png" alt="User Image" style="float:left;height:50px;">
+
+                        <a class="users-list-name">{{chat.messages[chat.messages.length - 1].msg}}</a>
+                    </div>
                 </div>
                 <div class="box-footer text-center">
                     <a href="javascript:void(0)" class="uppercase">Something</a>
@@ -110,7 +109,7 @@
         <div class="col-md-3 pull-right">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Waiting Friends</h3>
+                    <h3 class="box-title">Pending Requests</h3>
                     <div class="box-tools">
                         <span class="label label-danger">-- {{pending_friends.length}}</span> pending
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
@@ -127,28 +126,6 @@
                 <div class="box-footer text-center">
                     <a href="javascript:void(0)" class="uppercase">Something</a>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 pull-right">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title">Pending Friends</h3>
-                <div class="box-tools">
-                    <span class="label label-danger">-- {{pending_friends.length}}</span> pending
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                </div>
-            </div>
-            <div class="box-body direct-chat-messages">
-                <ul class="users-list clearfix" >
-                    <li ng-repeat="friend in user.friends track by $index" ng-if="friend.status == 'Pending'" ng-click="handleFriendReq(friend)">
-                        <button><img src="views/img/avatar2.png" alt="User Image"><a class="users-list-name">{{friend.name}}</a></button>
-                    </li>  
-                </ul>
-            </div>
-            <div class="box-footer text-center">
-                <a href="javascript:void(0)" class="uppercase">Something</a>
             </div>
         </div>
     </div>

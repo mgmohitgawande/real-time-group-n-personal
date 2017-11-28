@@ -45,5 +45,6 @@ require('./server/sockets/chat_socket.js')(io)
 
 
 http.listen(port, function(){
+    require('./server/utility/startup.js')()
     console.log("Node Running On port :", port);
 })

@@ -170,12 +170,22 @@ app.service('dataService', ['$http', '$localStorage', '$state', 'app_settings', 
         })
     }
 
+    var _getRecentChats = function(data){
+        data.user = $localStorage.user
+        return $http({
+            method : 'POST',
+            url : app_settings.API_URL + 'getRecentChats', 
+            data : data
+        })
+    }
+
     return {
         send_friend_request : _send_friend_request,
         confirm_friend_request : _confirm_friend_request,
         registerChatSessionForUser : _registerChatSessionForUser,
         logout : _logout,
         login : _login,
-        register : _register
+        register : _register,
+        getRecentChats : _getRecentChats
     }
 }])

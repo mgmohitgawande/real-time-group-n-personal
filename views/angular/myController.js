@@ -3,15 +3,29 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
     console.log('my name root scope', $rootScope.name)
     url= location.host;
     $scope.$storage = $localStorage;
-    
+
     $scope.user = $localStorage.user;
     $scope.users=[];
     $scope.online_friends=[];
     $scope.allfriends=[];
     $scope.messages={};
+    $scope.chats = []
     
     var monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October","November", "December"];
     
+    dataService.getRecentChats({}).then(function(recentChats){
+        $scope.chats = recentChats.data;
+        $scope.chats = $scope.chats.map(function(chat){
+            var friend = $scope.user.friends.filter(friend => chat._id && friend._id == chat._id.friend_id)
+            friend = friend.length ? friend[0] : {}
+            chat.name = friend.name;
+            chat.status = friend.status;
+            chat._id = friend._id
+            return chat
+        })
+    }, function(error){
+        console.log('error obtaining recent chats', error)
+    })
     socket.on('friend_list', function(data) {
         console.log("Friends list : ", data);
         $scope.$apply(function () {
@@ -190,26 +204,31 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
     
     var insertMessage = function(from, to, msg, popup_index){
         console.log(from + " " + to);
-        if (to in $scope.messages){
-            if ($scope.messages[to].length>25){
-                $scope.messages[to].splice(0,1);
-            }
-        }
-        else{
-            $scope.messages[to]=[];
-        }
-        $scope.messages[to].push({
+        
+        var message_obj = {
             "sender":from,
             "msg" : msg,
             "date" : getDate()  
-        });
-        $scope.popups[popup_index].messages.push({
-            "sender":from,
-            "msg" : msg,
-            "date" : getDate()  
-        })
-        localStorage.setItem(to, JSON.stringify($scope.messages[to]));
-        localStorage.setItem(from, JSON.stringify($scope.messages[from]));
+        }
+        
+        var friend = from == $scope.user._id ? to : from
+        friend = $scope.user.friends.filter(temp_friend => temp_friend._id == friend);
+        friend = friend.length ? friend[0] : {}
+
+        $scope.chats = $scope.chats.filter(chat => chat._id != friend._id)
+        
+        var friend_chat = $scope.chats.filter(chat => chat._id == friend._id)
+        friend_chat = friend_chat.length ? friend_chat[0] : {
+            _id : friend._id,
+            name : friend.name,
+            status : friend.status,
+            messages : []
+        }
+
+        friend_chat.messages.push(message_obj);
+        $scope.popups[popup_index].messages.push(message_obj)
+
+        $scope.chats.unshift(friend_chat)
         console.log(localStorage.getItem(to));
     }
 
@@ -231,9 +250,11 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
     $scope.popups = [];
     
     $scope.chat_popup = function(chat_friend){
+        // chat_friend = {_id, name, messages}
         $scope.popups = $scope.popups.filter(friend => friend._id != chat_friend._id)
-        console.log('jjj', chat_friend, localStorage.getItem(chat_friend._id), typeof localStorage.getItem(chat_friend._id))
-        chat_friend.messages = localStorage.getItem(chat_friend._id) && localStorage.getItem(chat_friend._id) != null && localStorage.getItem(chat_friend._id) != 'undefined' ? JSON.parse(localStorage.getItem(chat_friend._id)) : []
+        var friend_messages = $scope.chats.filter(chat => chat._id == chat_friend._id);
+        friend_messages = friend_messages.length ? friend_messages[0].messages : []
+        chat_friend.messages = friend_messages
         $scope.popups.push(chat_friend)
     }
     $scope.close_chat= function(chat_friend_id)
