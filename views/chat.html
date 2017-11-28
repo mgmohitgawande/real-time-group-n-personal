@@ -96,7 +96,7 @@
                 </div>
                 <div class="box-body direct-chat-messages">
                     <ul class="users-list clearfix" >
-                        <li ng-repeat="friend in user.friends track by $index" ng-if="friend.status == 'Friend'" ng-click="handleFriendReq(friend)">
+                        <li ng-repeat="friend in user.friends track by $index" ng-if="friend.status == 'Friend'" ng-click="chatOrUnfriend(friend)">
                             <button><img src="views/img/avatar2.png" alt="User Image"><a class="users-list-name">{{friend.name}}</a></button>
                         </li>  
                     </ul>

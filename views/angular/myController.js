@@ -64,18 +64,21 @@ app.controller('myController',['$scope', '$rootScope', 'socket','$http','$mdDial
     };
 
     var chatWitFriend = function(friend){
-        
+        return function(){
+            var chat_friend = $scope.user.friends.filter(user_friend => user_friend._id == friend._id)[0]
+            $scope.chat_popup(chat_friend);
+        }
     }
 
     $scope.chatOrUnfriend = function(friend){
         var confirm = $mdDialog.confirm()
             .title(" connection request ")
-            .textContent(data.friend_handle+' wants to connect.Do you want to Connect?')
+            .textContent(friend.name+' wants to connect.Do you want to Connect?')
             .ariaLabel('Lucky day')
             .ok('Chat')
             .cancel('Unfriend');
 
-            $mdDialog.show(confirm).then(chatWitFriend, function(friend){
+            $mdDialog.show(confirm).then(chatWitFriend(friend), function(){
                 var data = {
                     confirm : 'No',
                     friend_id : friend._id,
