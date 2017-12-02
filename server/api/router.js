@@ -6,6 +6,7 @@ module.exports = function (io){
     router.post('/register', require('./register.js'))
     router.post('/login', require('./login.js'))
     router.post('/check_login', require('./check_login.js'))
+    router.get('/getBitcoinPrice', require('./getBitcoinPrice.js'))
 
 
     router.use(require('../utility/auth-checker.js'))
